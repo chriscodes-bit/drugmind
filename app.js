@@ -329,7 +329,6 @@ medicationForm.addEventListener(
                                 "Automatic reminder created:",
                                 medication
                             );
-
                         } catch (error) {
                             console.error(
                                 "Failed to create reminder:",
@@ -388,10 +387,6 @@ function loadMedications(db) {
 // Display Medications
 // --------------------------------------------------
 
-// --------------------------------------------------
-// Display Medications
-// --------------------------------------------------
-
 function displayMedications(
     db,
     medications
@@ -426,10 +421,17 @@ function displayMedications(
 
         element.innerHTML = `
             <div class="medication-view">
+
                 <div class="medication-header">
-                    <h3>${escapeHtml(medication.name)}</h3>
+
+                    <h3>
+                        ${escapeHtml(
+            medication.name
+        )}
+                    </h3>
 
                     <div class="medication-actions">
+
                         <button
                             type="button"
                             class="edit-medication"
@@ -443,10 +445,13 @@ function displayMedications(
                         >
                             Delete
                         </button>
+
                     </div>
+
                 </div>
 
                 <div class="medication-info">
+
                     <p>
                         <strong>
                             ${medication.pillsRemaining}
@@ -460,27 +465,41 @@ function displayMedications(
                         </strong>
                         pills/day
                     </p>
+
                 </div>
 
                 <div class="medication-dates">
+
                     <p>
                         Runs out:
                         <strong>
-                            ${formatDate(runOutDate)}
+                            ${formatDate(
+            runOutDate
+        )}
                         </strong>
                     </p>
 
                     <p>
                         Reminder:
                         <strong>
-                            ${formatDate(reminderDate)}
+                            ${formatDate(
+            reminderDate
+        )}
                         </strong>
                     </p>
+
                 </div>
+
             </div>
 
-            <form class="medication-edit-form" hidden>
-                <h3>Edit medication</h3>
+            <form
+                class="medication-edit-form"
+                hidden
+            >
+
+                <h3>
+                    Edit medication
+                </h3>
 
                 <label>
                     Medication
@@ -488,7 +507,9 @@ function displayMedications(
                     <input
                         type="text"
                         name="name"
-                        value="${escapeHtml(medication.name)}"
+                        value="${escapeHtml(
+            medication.name
+        )}"
                         required
                     >
                 </label>
@@ -520,6 +541,7 @@ function displayMedications(
                 </label>
 
                 <div class="edit-actions">
+
                     <button
                         type="submit"
                     >
@@ -532,7 +554,9 @@ function displayMedications(
                     >
                         Cancel
                     </button>
+
                 </div>
+
             </form>
         `;
 
@@ -657,7 +681,6 @@ function displayMedications(
                     );
 
                     loadMedications(db);
-
                 } catch (error) {
                     console.error(
                         "Failed to update medication:",
@@ -842,6 +865,42 @@ function formatDate(date) {
 // Notifications
 // --------------------------------------------------
 
+const notificationButton =
+    document.getElementById(
+        "enable-notifications"
+    );
+
+async function updateNotificationButton() {
+    if (!notificationButton) {
+        return;
+    }
+
+    try {
+        const subscription =
+            await getSubscription();
+
+        if (subscription) {
+            notificationButton.textContent =
+                "Notifications Enabled ✓";
+
+            notificationButton.disabled =
+                true;
+        } else {
+            notificationButton.textContent =
+                "Enable Notifications";
+
+            notificationButton.disabled =
+                false;
+        }
+
+    } catch (error) {
+        console.error(
+            "Failed to check notification subscription:",
+            error
+        );
+    }
+}
+
 async function enableNotifications() {
     if (
         !("serviceWorker" in navigator)
@@ -949,6 +1008,8 @@ async function enableNotifications() {
         "Push subscription created:",
         subscription
     );
+
+    await updateNotificationButton();
 }
 
 // --------------------------------------------------
@@ -960,9 +1021,10 @@ function urlBase64ToUint8Array(
 ) {
     const padding =
         "=".repeat(
-            (4 -
-                base64String.length % 4) %
-            4
+            (
+                4 -
+                base64String.length % 4
+            ) % 4
         );
 
     const base64 =
@@ -994,34 +1056,34 @@ function urlBase64ToUint8Array(
 // Notification Button
 // --------------------------------------------------
 
-const notificationButton =
-    document.getElementById(
-        "enable-notifications"
-    );
-
-notificationButton.addEventListener(
-    "click",
-    async () => {
-        console.log(
-            "Enable Notifications clicked"
-        );
-
-        try {
-            await enableNotifications();
-
-            alert(
-                "Notifications enabled!"
+if (notificationButton) {
+    notificationButton.addEventListener(
+        "click",
+        async () => {
+            console.log(
+                "Enable Notifications clicked"
             );
 
-        } catch (error) {
-            console.error(
-                "Notification setup failed:",
-                error
-            );
+            try {
+                await enableNotifications();
 
-            alert(
-                error.message
-            );
+                alert(
+                    "Notifications enabled!"
+                );
+
+            } catch (error) {
+                console.error(
+                    "Notification setup failed:",
+                    error
+                );
+
+                alert(
+                    error.message
+                );
+            }
         }
-    }
-);
+    );
+}
+
+// Check existing subscription when app starts
+updateNotificationButton();
