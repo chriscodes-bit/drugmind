@@ -1,3 +1,11 @@
+:root {
+    --primary-color: #;
+    --secondary-color: #;
+    --background-color: #;
+    --text-color: #;
+    --border-color: #;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -8,19 +16,67 @@ body {
     padding: 24px;
 
     font-family:
-        "Arial", sans-serif;
+        "Manjari", sans-serif;
 
     background: #C3BEE9;
     color: black;
+    font-size: 16px;
 }
 
 h1 {
     margin-bottom: 32px;
     text-align: center;
+    font-family: "Borel", cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 300%;
 }
 
 h2 {
     margin-top: 32px;
+}
+
+.app-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 40px;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tab {
+    padding: 0.6rem 1rem;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: #333;
+    color: white;
+}
+
+.tab-content[hidden] {
+    display: none;
+}
+
+.reminder-card,
+.medication-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
 }
 
 #enable-notifications {
@@ -35,7 +91,7 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 16px;
-
+    margin-bottom: 10px;
     padding: 20px;
     font-weight: bold;
     background: #736897;
@@ -68,15 +124,9 @@ input {
 
 button {
     padding: 10px 16px;
-
-    border: 1px solid black;
-    border-radius: 8px;
-
-    background: #564C7B;
-    color: white;
-
     font: inherit;
     cursor: pointer;
+    border-radius: 8px;
 }
 
 button:hover {
@@ -99,13 +149,11 @@ button:hover {
 
 .medication-card {
     padding: 20px;
-
-    background: white;
     border-radius: 12px;
     background: #736897;
-    border: 1px solid black;
+    /* border: 1px solid black;
     box-shadow:
-        0 2px 8px rgba(0, 0, 0, 1);
+        0 2px 8px rgba(0, 0, 0, 0.5); */
 }
 
 .medication-header {
@@ -181,6 +229,38 @@ button:hover {
     width: 75px;
     text-align: center;
     box-sizing: border-box;
+}
+
+/*
+Reminder Card
+*/
+
+.reminder-card {
+    background: white;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.reminder-header {
+    text-align: left;
+}
+
+.reminder-info {
+    text-align: right;
+}
+
+.reminder-change {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.reminder-change button {
+    width: auto;
+    padding: 0.5rem 1rem;
 }
 
 select {

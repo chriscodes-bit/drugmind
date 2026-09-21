@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drugmind</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Borel&family=Manjari:wght@100;400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-title">
+        <h1>Drugmind</h1>
+        <img src="assets/brain-svgrepo-com.svg" alt="" class="logo">
+    </div>
+
+    <nav class="tabs">
+        <button type="button" class="tab active" data-tab="inventory">
+            Inventar
+        </button>
+
+        <button type="button" class="tab" data-tab="reminders">
+            Erinnerungen
+        </button>
+    </nav>
+
+    <main>
+        <section id="inventory" class="tab-content">
+            <form id="medication-form">
+                <div id="medication-details">
+                    <input type="text" id="medication-name" required placeholder="Medikament">
+
+                    <input type="number" id="medication-mg" required placeholder="Dosis">
+
+                    <select id="medication-unit" required>
+                        <option value="µg">µg</option>
+                        <option value="mg" selected>mg</option>
+                        <option value="g">g</option>
+                        <option value="ml">ml</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="pills-remaining">
+                        Tabletten vorhanden
+                    </label>
+
+                    <input type="number" id="pills-remaining" min="0" step="1" required placeholder="100">
+                </div>
+
+                <div>
+                    <label for="pills-per-day">
+                        Tabletten pro Tag
+                    </label>
+
+                    <input type="number" id="pills-per-day" min="0.5" step="0.5" required placeholder="1">
+                </div>
+
+                <button type="submit">
+                    Hinzufügen
+                </button>
+            </form>
+
+            <div id="medications"></div>
+        </section>
+
+        <section id="reminders" class="tab-content" hidden>
+        </section>
+    </main>
+
+    <script src="app.js" defer></script>
+</body>
+
+</html>

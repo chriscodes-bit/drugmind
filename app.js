@@ -12,7 +12,8 @@ const WORKER_URL =
 // --------------------------------------------------
 
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js")
+    navigator.serviceWorker
+        .register("./sw.js")
         .then(registration => {
             console.log(
                 "Service worker registered:",
@@ -69,8 +70,7 @@ function calculateReminderDate(medication) {
         medication.pillsRemaining /
         medication.pillsPerDay;
 
-    const runOutDate =
-        new Date();
+    const runOutDate = new Date();
 
     runOutDate.setDate(
         runOutDate.getDate() +
@@ -81,8 +81,7 @@ function calculateReminderDate(medication) {
         new Date(runOutDate);
 
     reminderDate.setDate(
-        reminderDate.getDate() -
-        14
+        reminderDate.getDate() - 14
     );
 
     return {
@@ -117,11 +116,8 @@ async function createReminder(medication) {
         );
     }
 
-    const {
-        reminderDate
-    } = calculateReminderDate(
-        medication
-    );
+    const { reminderDate } =
+        calculateReminderDate(medication);
 
     const response =
         await fetch(
@@ -180,11 +176,8 @@ async function updateReminder(medication) {
         );
     }
 
-    const {
-        reminderDate
-    } = calculateReminderDate(
-        medication
-    );
+    const { reminderDate } =
+        calculateReminderDate(medication);
 
     const response =
         await fetch(
@@ -238,131 +231,166 @@ const medicationForm =
         "medication-form"
     );
 
-medicationForm.addEventListener(
-    "submit",
-    event => {
-        event.preventDefault();
+if (medicationForm) {
+    medicationForm.addEventListener(
+        "submit",
+        event => {
+            event.preventDefault();
 
-        const name =
-            document
-                .getElementById(
-                    "medication-name"
-                )
-                .value
-                .trim();
-
-        const dose = Number(document.getElementById("medication-mg").value);
-        const unit = document.getElementById("medication-unit").value.trim();
-
-        const pillsRemaining =
-            Number(
+            const name =
                 document
                     .getElementById(
-                        "pills-remaining"
+                        "medication-name"
                     )
                     .value
-            );
+                    .trim();
 
-        const pillsPerDay =
-            Number(
+            const dose =
+                Number(
+                    document.getElementById(
+                        "medication-mg"
+                    ).value
+                );
+
+            const unit =
                 document
                     .getElementById(
-                        "pills-per-day"
+                        "medication-unit"
                     )
                     .value
-            );
+                    .trim();
 
-        if (
-            !name ||
-            !Number.isFinite(dose) ||
-            dose <= 0 ||
-            !unit ||
-            pillsRemaining < 0 ||
-            pillsPerDay <= 0
-        ) {
-            return;
-        }
+            const pillsRemaining =
+                Number(
+                    document
+                        .getElementById(
+                            "pills-remaining"
+                        )
+                        .value
+                );
 
-        const medication = {
-            name,
-            dose,
-            unit,
-            pillsRemaining,
-            pillsPerDay
-        };
+            const pillsPerDay =
+                Number(
+                    document
+                        .getElementById(
+                            "pills-per-day"
+                        )
+                        .value
+                );
 
-        const request =
-            indexedDB.open(
-                "MedicationDB",
-                1
-            );
+            if (
+                !name ||
+                !Number.isFinite(dose) ||
+                dose <= 0 ||
+                !unit ||
+                !Number.isFinite(pillsRemaining) ||
+                pillsRemaining < 0 ||
+                !Number.isFinite(pillsPerDay) ||
+                pillsPerDay <= 0
+            ) {
+                return;
+            }
 
-        request.onsuccess =
-            event => {
-                const db =
-                    event.target.result;
+            const medication = {
+                name,
+                dose,
+                unit,
+                pillsRemaining,
+                pillsPerDay
+            };
 
-                const transaction =
-                    db.transaction(
-                        "medications",
-                        "readwrite"
-                    );
+            const request =
+                indexedDB.open(
+                    "MedicationDB",
+                    1
+                );
 
-                const store =
-                    transaction.objectStore(
-                        "medications"
-                    );
+            request.onsuccess =
+                event => {
+                    const db =
+                        event.target.result;
 
-                const addRequest =
-                    store.add(
-                        medication
-                    );
+                    const transaction =
+                        db.transaction(
+                            "medications",
+                            "readwrite"
+                        );
 
-                addRequest.onsuccess =
-                    async event => {
-                        medication.id =
-                            event.target.result;
+                    const store =
+                        transaction.objectStore(
+                            "medications"
+                        );
 
-                        console.log(
-                            "Medication saved:",
+                    const addRequest =
+                        store.add(
                             medication
                         );
 
-                        try {
-                            await createReminder(
-                                medication
-                            );
+                    addRequest.onsuccess =
+                        async event => {
+                            medication.id =
+                                event.target.result;
 
                             console.log(
-                                "Automatic reminder created:",
+                                "Medication saved:",
                                 medication
                             );
-                        } catch (error) {
-                            console.error(
-                                "Failed to create reminder:",
-                                error
-                            );
 
-                            alert(
-                                error.message
-                            );
-                        }
+                            try {
+                                await createReminder(
+                                    medication
+                                );
 
-                        medicationForm.reset();
+                                console.log(
+                                    "Automatic reminder created:",
+                                    medication
+                                );
+                            } catch (error) {
+                                console.error(
+                                    "Failed to create reminder:",
+                                    error
+                                );
 
-                        loadMedications(db);
-                    };
-            };
+                                alert(
+                                    error.message
+                                );
+                            }
 
-        request.onerror =
-            event => {
-                console.error(
-                    "Failed to open database:",
-                    event.target.error
-                );
-            };
-    }
-);
+                            medicationForm.reset();
+
+                            loadMedications(db);
+
+                            // Refresh reminders
+                            // if that tab is currently open.
+                            const reminders =
+                                document.getElementById(
+                                    "reminders"
+                                );
+
+                            if (
+                                reminders &&
+                                !reminders.hidden
+                            ) {
+                                displayReminders(
+                                    db,
+                                    await getAllMedications(
+                                        db
+                                    )
+                                );
+                            }
+                        };
+                };
+
+            request.onerror =
+                event => {
+                    console.error(
+                        "Failed to open database:",
+                        event.target.error
+                    );
+                };
+        }
+    );
+}
 
 // --------------------------------------------------
 // Load Medications
@@ -392,6 +420,190 @@ function loadMedications(db) {
 }
 
 // --------------------------------------------------
+// Get All Medications
+// --------------------------------------------------
+
+function getAllMedications(db) {
+    return new Promise(
+        (resolve, reject) => {
+            const transaction =
+                db.transaction(
+                    "medications",
+                    "readonly"
+                );
+
+            const store =
+                transaction.objectStore(
+                    "medications"
+                );
+
+            const request =
+                store.getAll();
+
+            request.onsuccess = () => {
+                resolve(
+                    request.result
+                );
+            };
+
+            request.onerror = () => {
+                reject(
+                    request.error
+                );
+            };
+        }
+    );
+}
+
+// --------------------------------------------------
+// Display Reminders
+// --------------------------------------------------
+
+function displayReminders(
+    db,
+    medications
+) {
+    const container =
+        document.getElementById(
+            "reminders"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    if (medications.length === 0) {
+        container.textContent =
+            "Bisher wurden keine Medikamente hinzugefügt.";
+
+        return;
+    }
+
+    // Calculate reminder dates and sort
+    // from earliest to latest.
+    const reminders =
+        medications
+            .map(medication => {
+                const {
+                    runOutDate,
+                    reminderDate
+                } =
+                    calculateReminderDate(
+                        medication
+                    );
+
+                return {
+                    medication,
+                    runOutDate,
+                    reminderDate
+                };
+            })
+            .sort(
+                (a, b) =>
+                    a.reminderDate -
+                    b.reminderDate
+            );
+
+    for (const reminder of reminders) {
+        const {
+            medication,
+            runOutDate,
+            reminderDate
+        } = reminder;
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+        element.className =
+            "reminder-card";
+
+        element.innerHTML = `
+            <div class="reminder-header">
+                <h3>
+                    ${escapeHtml(
+            medication.name
+        )}
+                    (${medication.dose ?? ""}
+                    ${escapeHtml(
+            medication.unit ?? ""
+        )})
+                </h3>
+            </div>
+
+            <div class="reminder-info">
+                <p>
+                    Läuft aus am:
+                    <strong>
+                        ${formatDate(runOutDate)}
+                    </strong>
+                </p>
+                <p>
+                    Benachrichtigung:
+                    <strong>
+                        ${formatDate(reminderDate)}
+                    </strong>
+                </p>
+            </div>
+
+            <div class="reminder-change">
+                <button>Benachrichtige mich früher</button>
+            </div>
+        `;
+
+        container.appendChild(
+            element
+        );
+    }
+}
+
+// --------------------------------------------------
+// Load Reminders
+// --------------------------------------------------
+
+async function openDatabaseAndLoadReminders() {
+    const request =
+        indexedDB.open(
+            "MedicationDB",
+            1
+        );
+
+    request.onsuccess =
+        async event => {
+            const db =
+                event.target.result;
+
+            try {
+                const medications =
+                    await getAllMedications(
+                        db
+                    );
+
+                displayReminders(
+                    db,
+                    medications
+                );
+            } catch (error) {
+                console.error(
+                    "Failed to load reminders:",
+                    error
+                );
+            }
+        };
+
+    request.onerror =
+        event => {
+            console.error(
+                "Failed to open database:",
+                event.target.error
+            );
+        };
+}
+
+// --------------------------------------------------
 // Display Medications
 // --------------------------------------------------
 
@@ -404,6 +616,10 @@ function displayMedications(
             "medications"
         );
 
+    if (!container) {
+        return;
+    }
+
     container.innerHTML = "";
 
     if (medications.length === 0) {
@@ -415,7 +631,9 @@ function displayMedications(
 
     for (const medication of medications) {
         const element =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         element.className =
             "medication-card";
@@ -423,9 +641,10 @@ function displayMedications(
         const {
             runOutDate,
             reminderDate
-        } = calculateReminderDate(
-            medication
-        );
+        } =
+            calculateReminderDate(
+                medication
+            );
 
         element.innerHTML = `
             <div class="medication-view">
@@ -433,9 +652,13 @@ function displayMedications(
                 <div class="medication-header">
 
                     <h3>
-                        ${escapeHtml(medication.name)}
+                        ${escapeHtml(
+            medication.name
+        )}
                         (${medication.dose ?? ""}
-                        ${escapeHtml(medication.unit ?? "")})
+                        ${escapeHtml(
+            medication.unit ?? ""
+        )})
                     </h3>
 
                     <div class="medication-actions">
@@ -444,14 +667,14 @@ function displayMedications(
                             type="button"
                             class="edit-medication"
                         >
-                            Edit
+                            <strong>Edit</strong>
                         </button>
 
                         <button
                             type="button"
                             class="delete-medication"
                         >
-                            Delete
+                            <strong>Delete</strong>
                         </button>
 
                     </div>
@@ -464,35 +687,18 @@ function displayMedications(
                         <strong>
                             ${medication.pillsRemaining}
                         </strong>
-                        pills remaining
+                        Stück auf Lager
                     </p>
 
                     <p>
                         <strong>
                             ${medication.pillsPerDay}
                         </strong>
-                        pills/day
+                        Tabletten/Tag
                     </p>
 
                 </div>
 
-                <div class="medication-dates">
-
-                    <p>
-                        Runs out:
-                        <strong>
-                            ${formatDate(runOutDate)}
-                        </strong>
-                    </p>
-
-                    <p>
-                        Reminder:
-                        <strong>
-                            ${formatDate(reminderDate)}
-                        </strong>
-                    </p>
-
-                </div>
 
             </div>
 
@@ -518,6 +724,7 @@ function displayMedications(
 
                 <label>
                     Dose
+
                     <input
                         type="number"
                         name="dose"
@@ -528,11 +735,46 @@ function displayMedications(
 
                 <label>
                     Unit
-                    <select id="medication-unit" name="unit" required>
-                        <option value="µg">µg</option>
-                        <option value="mg" selected>mg</option>
-                        <option value="g">g</option>
-                        <option value="ml">ml</option>
+
+                    <select
+                        name="unit"
+                        required
+                    >
+                        <option
+                            value="µg"
+                            ${medication.unit === "µg"
+                ? "selected"
+                : ""}
+                        >
+                            µg
+                        </option>
+
+                        <option
+                            value="mg"
+                            ${medication.unit === "mg"
+                ? "selected"
+                : ""}
+                        >
+                            mg
+                        </option>
+
+                        <option
+                            value="g"
+                            ${medication.unit === "g"
+                ? "selected"
+                : ""}
+                        >
+                            g
+                        </option>
+
+                        <option
+                            value="ml"
+                            ${medication.unit === "ml"
+                ? "selected"
+                : ""}
+                        >
+                            ml
+                        </option>
                     </select>
                 </label>
 
@@ -564,9 +806,7 @@ function displayMedications(
 
                 <div class="edit-actions">
 
-                    <button
-                        type="submit"
-                    >
+                    <button type="submit">
                         Save
                     </button>
 
@@ -641,54 +881,88 @@ function displayMedications(
                 event.preventDefault();
 
                 const formData =
-                    new FormData(editForm);
+                    new FormData(
+                        editForm
+                    );
+
+                const nameValue =
+                    formData.get(
+                        "name"
+                    );
+
+                const doseValue =
+                    formData.get(
+                        "dose"
+                    );
+
+                const unitValue =
+                    formData.get(
+                        "unit"
+                    );
+
+                const pillsRemainingValue =
+                    formData.get(
+                        "pillsRemaining"
+                    );
+
+                const pillsPerDayValue =
+                    formData.get(
+                        "pillsPerDay"
+                    );
 
                 const name =
-                    formData
-                        .get("name")
-                        .trim();
+                    typeof nameValue ===
+                        "string"
+                        ? nameValue.trim()
+                        : "";
 
                 const dose =
                     Number(
-                        formData.get("dose")
+                        doseValue
                     );
 
                 const unit =
-                    formData
-                        .get("unit")
+                    typeof unitValue ===
+                        "string"
+                        ? unitValue.trim()
+                        : "";
 
                 const pillsRemaining =
                     Number(
-                        formData.get(
-                            "pillsRemaining"
-                        )
+                        pillsRemainingValue
                     );
 
                 const pillsPerDay =
                     Number(
-                        formData.get(
-                            "pillsPerDay"
-                        )
+                        pillsPerDayValue
                     );
 
                 if (
                     !name ||
-                    !Number.isFinite(dose) ||
+                    !Number.isFinite(
+                        dose
+                    ) ||
                     dose <= 0 ||
                     !unit ||
-                    !Number.isFinite(pillsRemaining) ||
+                    !Number.isFinite(
+                        pillsRemaining
+                    ) ||
                     pillsRemaining < 0 ||
-                    !Number.isFinite(pillsPerDay) ||
+                    !Number.isFinite(
+                        pillsPerDay
+                    ) ||
                     pillsPerDay <= 0
                 ) {
                     alert(
                         "Please enter valid medication details."
                     );
+
                     return;
                 }
 
                 const updatedMedication = {
                     ...medication,
+
                     name,
                     dose,
                     unit,
@@ -711,7 +985,32 @@ function displayMedications(
                         updatedMedication
                     );
 
-                    loadMedications(db);
+                    loadMedications(
+                        db
+                    );
+
+                    // Refresh reminders
+                    // if the tab is open.
+                    const reminders =
+                        document.getElementById(
+                            "reminders"
+                        );
+
+                    if (
+                        reminders &&
+                        !reminders.hidden
+                    ) {
+                        const medications =
+                            await getAllMedications(
+                                db
+                            );
+
+                        displayReminders(
+                            db,
+                            medications
+                        );
+                    }
+
                 } catch (error) {
                     console.error(
                         "Failed to update medication:",
@@ -751,9 +1050,12 @@ function displayMedications(
 
 function escapeHtml(value) {
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    div.textContent = value;
+    div.textContent =
+        String(value ?? "");
 
     return div.innerHTML;
 }
@@ -823,12 +1125,13 @@ async function deleteMedication(
                                 "application/json"
                         },
 
-                        body: JSON.stringify({
-                            medicationId:
-                                medication.id,
+                        body:
+                            JSON.stringify({
+                                medicationId:
+                                    medication.id,
 
-                            subscription
-                        })
+                                subscription
+                            })
                     }
                 );
 
@@ -860,19 +1163,47 @@ async function deleteMedication(
         );
 
         transaction.oncomplete =
-            () => {
+            async () => {
                 console.log(
                     "Medication deleted:",
                     medication.id
                 );
 
-                loadMedications(db);
+                loadMedications(
+                    db
+                );
+
+                // Refresh reminders
+                // if the tab is open.
+                const reminders =
+                    document.getElementById(
+                        "reminders"
+                    );
+
+                if (
+                    reminders &&
+                    !reminders.hidden
+                ) {
+                    const medications =
+                        await getAllMedications(
+                            db
+                        );
+
+                    displayReminders(
+                        db,
+                        medications
+                    );
+                }
             };
 
     } catch (error) {
         console.error(
             "Failed to delete medication:",
             error
+        );
+
+        alert(
+            error.message
         );
     }
 }
@@ -893,6 +1224,59 @@ function formatDate(date) {
 }
 
 // --------------------------------------------------
+// Tabs
+// --------------------------------------------------
+
+const tabs =
+    document.querySelectorAll(
+        ".tab"
+    );
+
+const tabContents =
+    document.querySelectorAll(
+        ".tab-content"
+    );
+
+tabs.forEach(tab => {
+    tab.addEventListener(
+        "click",
+        async () => {
+            const target =
+                tab.dataset.tab;
+
+            // Update active button
+            tabs.forEach(t => {
+                t.classList.remove(
+                    "active"
+                );
+            });
+
+            tab.classList.add(
+                "active"
+            );
+
+            // Show selected section
+            tabContents.forEach(
+                content => {
+                    content.hidden =
+                        content.id !==
+                        target;
+                }
+            );
+
+            // Load reminders whenever
+            // the reminders tab is opened.
+            if (
+                target ===
+                "reminders"
+            ) {
+                await openDatabaseAndLoadReminders();
+            }
+        }
+    );
+});
+
+// --------------------------------------------------
 // Notifications
 // --------------------------------------------------
 
@@ -911,7 +1295,8 @@ async function updateNotificationButton() {
             await getSubscription();
 
         if (subscription) {
-            notificationButton.hidden = true;
+            notificationButton.hidden =
+                true;
         } else {
             notificationButton.textContent =
                 "Enable Notifications";
@@ -959,7 +1344,9 @@ async function enableNotifications() {
     );
 
     const registration =
-        await navigator.serviceWorker.ready;
+        await navigator
+            .serviceWorker
+            .ready;
 
     console.log(
         "Service worker ready:",
@@ -983,7 +1370,8 @@ async function enableNotifications() {
 
     const {
         publicKey
-    } = await response.json();
+    } =
+        await response.json();
 
     console.log(
         "VAPID public key received"
@@ -995,12 +1383,14 @@ async function enableNotifications() {
         );
 
     let subscription =
-        await registration.pushManager
+        await registration
+            .pushManager
             .getSubscription();
 
     if (!subscription) {
         subscription =
-            await registration.pushManager
+            await registration
+                .pushManager
                 .subscribe({
                     userVisibleOnly: true,
                     applicationServerKey
@@ -1112,5 +1502,8 @@ if (notificationButton) {
     );
 }
 
-// Check existing subscription when app starts
+// --------------------------------------------------
+// Check existing subscription
+// --------------------------------------------------
+
 updateNotificationButton();
