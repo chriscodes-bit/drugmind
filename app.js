@@ -624,7 +624,7 @@ function displayMedications(
 
     if (medications.length === 0) {
         container.textContent =
-            "No medications added yet.";
+            "Noch keine Medikamente vorhanden.";
 
         return;
     }

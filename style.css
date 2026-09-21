@@ -1,9 +1,11 @@
 :root {
     --primary-color: #;
     --secondary-color: #;
-    --background-color: #;
+    --background-color: #D6F3F4;
     --text-color: #;
     --border-color: #;
+    --button-primary: #46C9CD;
+    --button-secondary: #8CDDE0;
 }
 
 * {
@@ -16,9 +18,8 @@ body {
     padding: 24px;
 
     font-family:
-        "Manjari", sans-serif;
-
-    background: #C3BEE9;
+        "Fira Sans", sans-serif;
+    background: var(--background-color);
     color: black;
     font-size: 16px;
 }
@@ -29,7 +30,8 @@ h1 {
     font-family: "Borel", cursive;
     font-weight: 400;
     font-style: normal;
-    font-size: 300%;
+    font-size: 500%;
+    color: white;
 }
 
 h2 {
@@ -44,9 +46,10 @@ h2 {
 }
 
 .logo {
-    width: 48px;
-    height: 48px;
+    width: 72px;
+    height: 72px;
     margin-bottom: 40px;
+    fill: #ffffff;
 }
 
 .tabs {
@@ -58,13 +61,14 @@ h2 {
 .tab {
     padding: 0.6rem 1rem;
     border: none;
-    background: #eee;
+    background: var(--button-secondary);
     cursor: pointer;
+    color: #ffffff;
 }
 
 .tab.active {
-    background: #333;
-    color: white;
+    background: var(--button-primary);
+    color: #ffffff;
 }
 
 .tab-content[hidden] {
@@ -94,11 +98,10 @@ h2 {
     margin-bottom: 10px;
     padding: 20px;
     font-weight: bold;
-    background: #736897;
-    border: 1px solid black;
+    background: #ffffff;
     border-radius: 12px;
     box-shadow:
-        0 2px 8px rgba(0, 0, 0, 1);
+        2px 2px 4px rgba(0, 0, 0, 1);
 }
 
 #medication-form>div {
@@ -113,12 +116,14 @@ h2 {
     gap: 12px;
 }
 
-input {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #000000;
+input,
+select {
+    height: 42px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    font-size: 1rem;
+    border: 1px solid black;
     border-radius: 8px;
-    background: #C3BEE9;
     font: inherit;
 }
 
@@ -126,7 +131,10 @@ button {
     padding: 10px 16px;
     font: inherit;
     cursor: pointer;
+    border: none;
     border-radius: 8px;
+    background-color: var(--button-primary);
+    color: white;
 }
 
 button:hover {
@@ -150,10 +158,10 @@ button:hover {
 .medication-card {
     padding: 20px;
     border-radius: 12px;
-    background: #736897;
-    /* border: 1px solid black;
+    background: #ffffff;
     box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.5); */
+        2px 2px 4px rgba(0, 0, 0, 1);
+    margin-top: 5px;
 }
 
 .medication-header {
@@ -241,6 +249,8 @@ Reminder Card
     flex-wrap: wrap;
     justify-content: space-between;
     padding: 1rem;
+    box-shadow:
+        2px 2px 4px rgba(0, 0, 0, 1);
 }
 
 .reminder-header {
@@ -268,7 +278,7 @@ select {
     padding: 10px 12px;
     border: 1px solid #000000;
     border-radius: 8px;
-    background: #C3BEE9;
+    background: #ffffff;
     font: inherit;
 }
 
