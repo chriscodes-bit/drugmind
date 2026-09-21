@@ -139,7 +139,7 @@ async function createReminder(medication) {
                         medication.id,
 
                     medicationName:
-                        medication.name,
+                        `${medication.name} ${medication.dose ?? ""} ${medication.unit ?? ""}`.trim(),
 
                     notifyAt:
                         reminderDate.toISOString(),
@@ -202,7 +202,7 @@ async function updateReminder(medication) {
                         medication.id,
 
                     medicationName:
-                        medication.name,
+                        `${medication.name} ${medication.dose ?? ""} ${medication.unit ?? ""}`.trim(),
 
                     notifyAt:
                         reminderDate.toISOString(),
@@ -251,6 +251,9 @@ medicationForm.addEventListener(
                 .value
                 .trim();
 
+        const dose = Number(document.getElementById("medication-mg").value);
+        const unit = document.getElementById("medication-unit").value.trim();
+
         const pillsRemaining =
             Number(
                 document
@@ -271,6 +274,9 @@ medicationForm.addEventListener(
 
         if (
             !name ||
+            !Number.isFinite(dose) ||
+            dose <= 0 ||
+            !unit ||
             pillsRemaining < 0 ||
             pillsPerDay <= 0
         ) {
@@ -279,6 +285,8 @@ medicationForm.addEventListener(
 
         const medication = {
             name,
+            dose,
+            unit,
             pillsRemaining,
             pillsPerDay
         };
@@ -425,9 +433,9 @@ function displayMedications(
                 <div class="medication-header">
 
                     <h3>
-                        ${escapeHtml(
-            medication.name
-        )}
+                        ${escapeHtml(medication.name)}
+                        (${medication.dose ?? ""}
+                        ${escapeHtml(medication.unit ?? "")})
                     </h3>
 
                     <div class="medication-actions">
@@ -473,18 +481,14 @@ function displayMedications(
                     <p>
                         Runs out:
                         <strong>
-                            ${formatDate(
-            runOutDate
-        )}
+                            ${formatDate(runOutDate)}
                         </strong>
                     </p>
 
                     <p>
                         Reminder:
                         <strong>
-                            ${formatDate(
-            reminderDate
-        )}
+                            ${formatDate(reminderDate)}
                         </strong>
                     </p>
 
@@ -507,11 +511,29 @@ function displayMedications(
                     <input
                         type="text"
                         name="name"
-                        value="${escapeHtml(
-            medication.name
-        )}"
+                        value="${escapeHtml(medication.name)}"
                         required
                     >
+                </label>
+
+                <label>
+                    Dose
+                    <input
+                        type="number"
+                        name="dose"
+                        value="${medication.dose ?? ""}"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Unit
+                    <select id="medication-unit" name="unit" required>
+                        <option value="µg">µg</option>
+                        <option value="mg" selected>mg</option>
+                        <option value="g">g</option>
+                        <option value="ml">ml</option>
+                    </select>
                 </label>
 
                 <label>
@@ -626,6 +648,15 @@ function displayMedications(
                         .get("name")
                         .trim();
 
+                const dose =
+                    Number(
+                        formData.get("dose")
+                    );
+
+                const unit =
+                    formData
+                        .get("unit")
+
                 const pillsRemaining =
                     Number(
                         formData.get(
@@ -642,25 +673,25 @@ function displayMedications(
 
                 if (
                     !name ||
-                    !Number.isFinite(
-                        pillsRemaining
-                    ) ||
+                    !Number.isFinite(dose) ||
+                    dose <= 0 ||
+                    !unit ||
+                    !Number.isFinite(pillsRemaining) ||
                     pillsRemaining < 0 ||
-                    !Number.isFinite(
-                        pillsPerDay
-                    ) ||
+                    !Number.isFinite(pillsPerDay) ||
                     pillsPerDay <= 0
                 ) {
                     alert(
                         "Please enter valid medication details."
                     );
-
                     return;
                 }
 
                 const updatedMedication = {
                     ...medication,
                     name,
+                    dose,
+                    unit,
                     pillsRemaining,
                     pillsPerDay
                 };
@@ -880,11 +911,7 @@ async function updateNotificationButton() {
             await getSubscription();
 
         if (subscription) {
-            notificationButton.textContent =
-                "Notifications Enabled ✓";
-
-            notificationButton.disabled =
-                true;
+            notificationButton.hidden = true;
         } else {
             notificationButton.textContent =
                 "Enable Notifications";

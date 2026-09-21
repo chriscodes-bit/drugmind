@@ -16,10 +16,15 @@ body {
 
 h1 {
     margin-bottom: 32px;
+    text-align: center;
 }
 
 h2 {
     margin-top: 32px;
+}
+
+#enable-notifications {
+    margin-top: 4em;
 }
 
 /* --------------------------------------------------
@@ -44,6 +49,12 @@ h2 {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+#medication-form>#medication-details {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
 }
 
 input {
@@ -125,6 +136,60 @@ button:hover {
 
 .medication-dates p {
     margin: 6px 0;
+}
+
+.medication-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#medication-name {
+    flex: 1;
+}
+
+#medication-mg::-webkit-inner-spin-button,
+#medication-mg::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#medication-mg {
+    width: 5px;
+    appearance: textfield;
+}
+
+#medication-details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+#medication-details #medication-name {
+    flex: 1;
+}
+
+#medication-details #medication-mg {
+    width: 75px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#medication-details #medication-unit {
+    width: 75px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    background: #C3BEE9;
+    font: inherit;
 }
 
 /* --------------------------------------------------

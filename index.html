@@ -15,26 +15,29 @@
 <body>
     <h1>Drugmind</h1>
 
-    <button id="enable-notifications">
-        Enable Notifications
-    </button>
-
     <h2>Add Medication</h2>
 
     <form id="medication-form">
-        <div>
-            <label for="medication-name">
-                Name
-            </label>
 
-            <input id="medication-name" type="text" required placeholder="Ibuprofen">
+        <div id="medication-details">
+
+            <input id="medication-name" type="text" required placeholder="Name">
+
+            <input id="medication-mg" type="number" required placeholder="Dose">
+
+            <select id="medication-unit" required>
+                <option value="µg">µg</option>
+                <option value="mg" selected>mg</option>
+                <option value="g">g</option>
+                <option value="ml">ml</option>
+            </select>
+
         </div>
 
         <div>
             <label for="pills-remaining">
                 Pills in stock
             </label>
-
             <input id="pills-remaining" type="number" min="0" step="1" required placeholder="50">
         </div>
 
@@ -42,18 +45,24 @@
             <label for="pills-per-day">
                 Pills per day
             </label>
-
             <input id="pills-per-day" type="number" min="0.01" step="0.01" required placeholder="1">
         </div>
 
         <button type="submit">
             Add Medication
         </button>
+
     </form>
 
     <h2>Inventory</h2>
 
     <div id="medications"></div>
+
+    <button href="https://www.doctolib.de/">Doctolib</button>
+
+    <button id="enable-notifications">
+        Enable Notifications
+    </button>
 
     <script src="app.js" defer></script>
 
