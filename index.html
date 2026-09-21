@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drugmind - Stock Tracker</title>
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="style.css">
 
 </head>
@@ -57,23 +57,6 @@
     <h2>Inventory</h2>
 
     <div id="medications"></div>
-
-    <button onclick="openDoctolib()">
-        Open Doctolib
-    </button>
-
-    <script>
-        function openDoctolib() {
-            const appUrl = "doctolib://";
-            const webUrl = "https://www.doctolib.de/";
-
-            window.location.href = appUrl;
-
-            setTimeout(() => {
-                window.location.href = webUrl;
-            }, 1000);
-        }
-    </script>
 
     <button id="enable-notifications">
         Enable Notifications
