@@ -58,7 +58,22 @@
 
     <div id="medications"></div>
 
-    <button href="https://www.doctolib.de/">Doctolib</button>
+    <button onclick="openDoctolib()">
+        Open Doctolib
+    </button>
+
+    <script>
+        function openDoctolib() {
+            const appUrl = "doctolib://";
+            const webUrl = "https://www.doctolib.de/";
+
+            window.location.href = appUrl;
+
+            setTimeout(() => {
+                window.location.href = webUrl;
+            }, 1000);
+        }
+    </script>
 
     <button id="enable-notifications">
         Enable Notifications
