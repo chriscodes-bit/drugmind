@@ -13,12 +13,11 @@
 }
 
 body {
+    width: 100%;
     max-width: 700px;
     margin: 0 auto;
     padding: 24px;
-
-    font-family:
-        "Fira Sans", sans-serif;
+    font-family: "Fira Sans", sans-serif;
     background: var(--background-color);
     color: black;
     font-size: 16px;
@@ -225,6 +224,7 @@ button:hover {
 
 #medication-details #medication-name {
     flex: 1;
+    min-width: 0;
 }
 
 #medication-details #medication-mg {
@@ -314,4 +314,82 @@ select {
 button:disabled {
     opacity: 0.6;
     cursor: default;
+}
+
+/* --------------------------------------------------
+   Mobile
+   -------------------------------------------------- */
+
+@media (max-width: 600px) {
+
+    body {
+        width: 100%;
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 300%;
+        margin-bottom: 24px;
+    }
+
+    .logo {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 20px;
+    }
+
+    /* Add medication */
+
+    #medication-details {
+        gap: 8px;
+    }
+
+    #medication-details #medication-name {
+        min-width: 0;
+    }
+
+    #medication-details #medication-mg {
+        width: 65px;
+        flex-shrink: 0;
+    }
+
+    #medication-details #medication-unit {
+        width: 65px;
+        flex-shrink: 0;
+    }
+
+    /* Medication cards */
+
+    .medication-header {
+        flex-wrap: wrap;
+    }
+
+    .medication-actions {
+        width: 100%;
+    }
+
+    .medication-actions button {
+        flex: 1;
+    }
+
+    .medication-info {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Reminder cards */
+
+    .reminder-card {
+        gap: 8px;
+    }
+
+    .reminder-header {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .reminder-info {
+        flex: 1;
+        min-width: 0;
+    }
 }
