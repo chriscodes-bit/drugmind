@@ -1,6 +1,6 @@
 {
-    "name": "Drugmind",
-    "short_name": "Drugmind",
+    "name": "Drugminder",
+    "short_name": "Drugminder",
     "start_url": "./",
     "scope": "./",
     "display": "standalone",
